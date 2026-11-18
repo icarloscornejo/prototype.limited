@@ -4,17 +4,12 @@ import Base from "../layouts/Base.astro";
 import { LANGUAGES } from "../lib/site";
 
 export async function getStaticPaths() {
-  // Legal pages are not routed here; only the four main pages per language.
-  // Defined inside because getStaticPaths is hoisted out of this file's scope.
-  const MAIN_PAGES = ["home", "services", "about", "contact"];
   const entriesByLanguage = await Promise.all(LANGUAGES.map(async (language) => ({ language, entries: await getCollection(language) })));
   return entriesByLanguage.flatMap(({ language, entries }) =>
-    entries
-      .filter((entry) => MAIN_PAGES.includes(entry.data.page))
-      .map((entry) => ({
-        params: { slug: entry.data.path.replace(/^\/|\/$/g, "") || undefined },
-        props: { entry, language },
-      })),
+    entries.map((entry) => ({
+      params: { slug: entry.data.path.replace(/^\/|\/$/g, "") || undefined },
+      props: { entry, language },
+    })),
   );
 }
 

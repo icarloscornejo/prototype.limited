@@ -12,6 +12,7 @@
     "test": "node --test --test-concurrency=1 tests/scaffold.test.mjs tests/pages.test.mjs"
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "0.4.10",
     "astro": "7.4.12"
   }
 }

@@ -1,7 +1,8 @@
 import { before, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
 
 const SITE_ORIGIN = "https://prototype.limited";
 const LANGUAGES = ["en", "es"];
@@ -14,7 +15,8 @@ const TITLE_SUFFIX = / \| Prototype$/;
 // its own when the pages do not exist yet.
 let buildResult;
 before(() => {
-  buildResult = spawnSync("pnpm", ["build"], { encoding: "utf8" });
+  // --force: the content cache is keyed by file contents, so editing the markdown plugin alone would leave stale HTML.
+  buildResult = spawnSync("pnpm", ["exec", "astro", "build", "--force"], { encoding: "utf8" });
 });
 
 function readText(path) {
@@ -40,7 +42,24 @@ const entries = Object.fromEntries(
     [...MAIN_PAGES, ...LEGAL_PAGES].map((page) => [`${language}/${page}`, loadEntry(language, page)]),
   ),
 );
-const mainEntries = LANGUAGES.flatMap((language) => MAIN_PAGES.map((page) => entries[`${language}/${page}`]));
+const pageEntries = LANGUAGES.flatMap((language) =>
+  [...MAIN_PAGES, ...LEGAL_PAGES].map((page) => entries[`${language}/${page}`]),
+);
+const legalEntries = pageEntries.filter((entry) => LEGAL_PAGES.includes(entry.page));
+
+const DATE_LINE = /^(.+): (\d{4}-\d{2}-\d{2})$/m;
+
+// The "Last updated" label is copy that lives in content/ (privacy body, same language).
+const dateLabelFor = (language) => entries[`${language}/privacy`].body.match(DATE_LINE)?.[1];
+
+// A page whose body has no date line gets one rendered from front matter, right after the H1.
+function expectedMainText(entry) {
+  const needsDateLine = LEGAL_PAGES.includes(entry.page) && !DATE_LINE.test(entry.body);
+  const body = !needsDateLine
+    ? entry.body
+    : entry.body.replace(/^(# .+)$/m, `$1\n\n${dateLabelFor(entry.language)}: ${entry.last_updated}`);
+  return markdownToText(body);
+}
 
 const labelFromTitle = (entry) => entry.title.replace(TITLE_SUFFIX, "");
 
@@ -85,6 +104,7 @@ function markdownToText(markdown) {
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/^#{1,6}\s+/gm, "")
     .replace(/^\s*[-*+]\s+/gm, "")
+    .replace(/^\s*\d+\.\s+/gm, "")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/(\*\*|__|`)/g, "")
     .replace(/\s+/g, " ")
@@ -128,17 +148,17 @@ describe("pages build", () => {
 });
 
 describe("routes render content word for word", () => {
-  for (const entry of mainEntries) {
+  for (const entry of pageEntries) {
     test(`given ${entry.language}/${entry.page} when built then ${entry.path} renders its markdown body word for word`, () => {
       const file = distFileForPath(entry.path);
       assert.ok(existsSync(file), `${file} missing`);
-      assert.equal(htmlToText(regionOf(readText(file), "main")), markdownToText(entry.body));
+      assert.equal(htmlToText(regionOf(readText(file), "main")), expectedMainText(entry));
     });
   }
 });
 
 describe("content links work as written", () => {
-  for (const entry of mainEntries) {
+  for (const entry of pageEntries) {
     const internalLinks = [...entry.body.matchAll(/\]\((\/[^)\s]*)\)/g)].map((match) => match[1]);
     for (const target of internalLinks) {
       test(`given ${entry.language}/${entry.page} when it links ${target} then the link is unchanged and the target exists`, () => {
@@ -152,7 +172,7 @@ describe("content links work as written", () => {
 });
 
 describe("language switch is a plain link", () => {
-  for (const entry of mainEntries) {
+  for (const entry of pageEntries) {
     test(`given ${entry.language}/${entry.page} when rendered then the other language is a plain link and the current one is not`, () => {
       const html = readPageHtml(entry);
       const counterpart = counterpartOf(entry);
@@ -174,7 +194,7 @@ describe("language switch is a plain link", () => {
 });
 
 describe("header name and nav", () => {
-  for (const entry of mainEntries) {
+  for (const entry of pageEntries) {
     test(`given ${entry.language}/${entry.page} when rendered then the header has the name and nav in the current language`, () => {
       const anchors = anchorsIn(regionOf(readPageHtml(entry), "header"));
       const languageHome = entries[`${entry.language}/home`];
@@ -192,7 +212,7 @@ describe("header name and nav", () => {
 });
 
 describe("footer legal links", () => {
-  for (const entry of mainEntries) {
+  for (const entry of pageEntries) {
     test(`given ${entry.language}/${entry.page} when rendered then the footer links the three legal pages`, () => {
       const anchors = anchorsIn(regionOf(readPageHtml(entry), "footer"));
       for (const page of LEGAL_PAGES) {
@@ -206,7 +226,7 @@ describe("footer legal links", () => {
 });
 
 describe("head metadata", () => {
-  for (const entry of mainEntries) {
+  for (const entry of pageEntries) {
     const label = `${entry.language}/${entry.page}`;
 
     test(`given ${label} when the head is read then title, description and Open Graph tags match the front matter`, () => {
@@ -256,4 +276,45 @@ describe("head metadata", () => {
       assert.match(css, /overflow-wrap:\s*anywhere/);
     });
   }
+});
+
+describe("legal pages show Last updated from front matter", () => {
+  for (const entry of legalEntries) {
+    const label = `${entry.language}/${entry.page}`;
+
+    test(`given ${label} when the front matter is read then last_updated is a plain date`, () => {
+      assert.match(entry.last_updated ?? "", /^\d{4}-\d{2}-\d{2}$/);
+    });
+
+    test(`given ${label} when built then the date line appears once, right after the h1, and equals the front matter`, () => {
+      const main = regionOf(readPageHtml(entry), "main");
+      const dateLine = `${dateLabelFor(entry.language)}: ${entry.last_updated}`;
+      assert.equal(htmlToText(main).split(dateLine).length - 1, 1, `"${dateLine}" must appear exactly once`);
+      assert.match(main, new RegExp(`</h1>\\s*<p>${dateLine}</p>`));
+    });
+  }
+
+  for (const entry of legalEntries.filter((candidate) => DATE_LINE.test(candidate.body))) {
+    test(`given ${entry.language}/${entry.page} when the body carries a date then it equals last_updated so they never drift`, () => {
+      assert.equal(entry.body.match(DATE_LINE)[2], entry.last_updated);
+    });
+  }
+});
+
+describe("content comments stay out of the built site", () => {
+  const htmlFilesIn = (directory) =>
+    existsSync(directory)
+      ? readdirSync(directory).flatMap((name) => {
+          const fullPath = join(directory, name);
+          return statSync(fullPath).isDirectory() ? htmlFilesIn(fullPath) : fullPath.endsWith(".html") ? [fullPath] : [];
+        })
+      : [];
+
+  test("given the built site when every html file is read then no comment or PROTO note is present", () => {
+    const files = htmlFilesIn("dist");
+    assert.ok(files.length >= pageEntries.length, "dist is missing pages");
+    for (const file of files) {
+      assert.doesNotMatch(readText(file), /<!--|PROTO-\d/, `${file} contains a comment`);
+    }
+  });
 });
