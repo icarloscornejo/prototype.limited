@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "test": "node --test tests/scaffold.test.mjs"
+    "test": "node --test --test-concurrency=1 tests/scaffold.test.mjs tests/pages.test.mjs"
   },
   "dependencies": {
     "astro": "7.4.12"

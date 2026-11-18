@@ -94,12 +94,10 @@ describe("content loading", () => {
     }
   });
 
-  test("given content/en/home.md when built then the placeholder home shows its title", () => {
+  test("given content/en/home.md when built then the home title tag equals its front matter title", () => {
     const expectedTitle = frontMatterTitle("content/en/home.md");
     assert.ok(expectedTitle);
-    const html = readText("dist/index.html");
-    assert.ok(html.includes(`<title>${expectedTitle}</title>`), "title tag missing");
-    assert.match(html, new RegExp(`<h1[^>]*>\\s*${expectedTitle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*</h1>`));
+    assert.ok(readText("dist/index.html").includes(`<title>${expectedTitle}</title>`), "title tag missing");
   });
 
   test("given a build when finished then content/ is untouched", () => {
@@ -138,9 +136,16 @@ describe("no tracking in the built output", () => {
   });
 
   test("given dist HTML when scanned then nothing loads from another origin", () => {
-    const loadingTag = /<(script|link|img|iframe|source)\b[^>]*\b(src|href)=["'](https?:)?\/\//gi;
+    const wholeTag = /<(script|link|img|iframe|source)\b[^>]*>/gi;
+    const externalReference = /\b(src|href)=["'](https?:)?\/\//i;
+    // hreflang alternates are navigation hints, not loaded resources; skip only
+    // those pointing at our own domain, whatever the attribute order.
+    const isOwnAlternate = (tag) => /\brel=["']?alternate\b/i.test(tag) && /\bhref=["']https:\/\/prototype\.limited/i.test(tag);
     for (const file of distFiles().filter((name) => name.endsWith(".html"))) {
-      assert.doesNotMatch(readText(file), loadingTag, `${file} loads an external resource`);
+      const offenders = (readText(file).match(wholeTag) ?? []).filter(
+        (tag) => externalReference.test(tag) && !(/^<link\b/i.test(tag) && isOwnAlternate(tag)),
+      );
+      assert.deepEqual(offenders, [], `${file} loads an external resource`);
     }
   });
 });

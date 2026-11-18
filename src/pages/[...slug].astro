@@ -1,0 +1,27 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { LANGUAGES } from "../lib/site";
+
+export async function getStaticPaths() {
+  // Legal pages are not routed here; only the four main pages per language.
+  // Defined inside because getStaticPaths is hoisted out of this file's scope.
+  const MAIN_PAGES = ["home", "services", "about", "contact"];
+  const entriesByLanguage = await Promise.all(LANGUAGES.map(async (language) => ({ language, entries: await getCollection(language) })));
+  return entriesByLanguage.flatMap(({ language, entries }) =>
+    entries
+      .filter((entry) => MAIN_PAGES.includes(entry.data.page))
+      .map((entry) => ({
+        params: { slug: entry.data.path.replace(/^\/|\/$/g, "") || undefined },
+        props: { entry, language },
+      })),
+  );
+}
+
+const { entry, language } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Base language={language} page={entry.data.page} title={entry.data.title} description={entry.data.description}>
+  <Content />
+</Base>

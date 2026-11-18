@@ -1,0 +1,51 @@
+---
+import "../styles/global.css";
+import { OG_LOCALES, SITE_NAME, SWITCH_LABELS, getChrome } from "../lib/site";
+import type { Language } from "../lib/site";
+
+interface Props {
+  language: Language;
+  page: string;
+  title: string;
+  description: string;
+}
+
+const { language, page, title, description } = Astro.props;
+const chrome = await getChrome(language, page, Astro.site!);
+const otherLocale = OG_LOCALES[chrome.switchTarget.language];
+---
+
+<!doctype html>
+<html lang={language}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={chrome.ogUrl} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content={OG_LOCALES[language]} />
+    <meta property="og:locale:alternate" content={otherLocale} />
+    {chrome.alternates.map((alternate) => <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />)}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href={chrome.homeHref}>{SITE_NAME}</a>
+      <nav>
+        {chrome.nav.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+      <div class="language-switch">
+        <span aria-current="true">{SWITCH_LABELS[language]}</span>
+        <a lang={chrome.switchTarget.language} hreflang={chrome.switchTarget.language} href={chrome.switchTarget.href}>{chrome.switchTarget.label}</a>
+      </div>
+    </header>
+    <main><slot /></main>
+    <footer>
+      {chrome.footer.map((link) => <a href={link.href}>{link.label}</a>)}
+    </footer>
+  </body>
+</html>
