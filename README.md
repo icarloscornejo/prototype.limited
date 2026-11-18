@@ -15,6 +15,30 @@ Each file starts with front matter (`page`, `path`, `title`, `description`, and 
 
 Pages: home, services, about, contact, privacy, terms, data-deletion. The three legal pages keep stable URLs because they are registered with Meta.
 
+## Development
+
+Astro, static output, no client JavaScript. Needs Node 24 (see `.nvmrc`; Astro requires 22.23.4 or newer) and pnpm.
+
+```sh
+pnpm install   # resolves only from registry.npmjs.org, pinned in .npmrc
+pnpm dev       # local dev server at http://localhost:4321
+pnpm build     # static files into dist/
+pnpm test      # builds, then checks the acceptance criteria
+```
+
+`.npmrc` pins the public registry because some machines default to a private one. Never run an install before it exists.
+
+## Deploy
+
+Cloudflare Pages, connected to this repo: push to `main` deploys production, every PR gets a preview URL.
+
+- Build command: `pnpm build`
+- Build output directory: `dist`
+- Production branch: `main`
+- Node version: 24 (`NODE_VERSION=24`)
+
+Do not enable Cloudflare Web Analytics: it injects a script, and the site has no analytics.
+
 ## Rules
 
 - No cookies, analytics or tracking scripts.
