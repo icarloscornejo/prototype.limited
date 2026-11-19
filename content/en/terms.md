@@ -36,4 +36,4 @@ These terms are governed by the laws of El Salvador.
 
 ## Contact
 
-Questions about these terms: icarloscornejo@outlook.com.
+Questions about these terms: hello@prototype.limited.

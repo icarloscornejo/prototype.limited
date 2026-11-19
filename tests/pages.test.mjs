@@ -318,3 +318,59 @@ describe("content comments stay out of the built site", () => {
     }
   });
 });
+
+describe("contact details point at the company domain", () => {
+  const NEW_EMAIL = "hello@prototype.limited";
+  const OLD_EMAIL = "icarloscornejo@outlook.com";
+  const NEW_LINKEDIN = "https://www.linkedin.com/company/prototype-sv";
+  const OLD_LINKEDIN_ID = "company/10868436";
+  const EMAIL_PAGES = ["contact", ...LEGAL_PAGES];
+
+  const htmlFilesIn = (directory) =>
+    existsSync(directory)
+      ? readdirSync(directory).flatMap((name) => {
+          const fullPath = join(directory, name);
+          return statSync(fullPath).isDirectory() ? htmlFilesIn(fullPath) : fullPath.endsWith(".html") ? [fullPath] : [];
+        })
+      : [];
+
+  test("given the built site when every html file is read then the old email and LinkedIn id are gone", () => {
+    const files = htmlFilesIn("dist");
+    assert.ok(files.length >= pageEntries.length, "dist is missing pages");
+    for (const file of files) {
+      const html = readText(file);
+      assert.ok(!html.includes(OLD_EMAIL), `${file} still has the old email`);
+      assert.ok(!html.includes(OLD_LINKEDIN_ID), `${file} still has the old LinkedIn id`);
+    }
+  });
+
+  for (const language of LANGUAGES) {
+    for (const page of EMAIL_PAGES) {
+      test(`given ${language}/${page} when it renders then the contact email is a mailto link to the company address`, () => {
+        const anchors = anchorsIn(regionOf(readPageHtml(entries[`${language}/${page}`]), "main"));
+        assert.ok(
+          anchors.some((anchor) => anchor.attributes.href === `mailto:${NEW_EMAIL}` && anchor.text === NEW_EMAIL),
+          `mailto:${NEW_EMAIL} missing in main`,
+        );
+      });
+    }
+
+    test(`given ${language}/contact when it renders then LinkedIn links to the company page`, () => {
+      const anchors = anchorsIn(regionOf(readPageHtml(entries[`${language}/contact`]), "main"));
+      assert.ok(
+        anchors.some((anchor) => anchor.attributes.href === NEW_LINKEDIN && anchor.text === NEW_LINKEDIN),
+        `${NEW_LINKEDIN} missing in main`,
+      );
+    });
+
+    test(`given content/${language}/contact.md when it is read then the domain-pending note is removed`, () => {
+      assert.doesNotMatch(readText(`content/${language}/contact.md`), /PROTO-5/);
+    });
+
+    for (const page of ["privacy", "terms"]) {
+      test(`given content/${language}/${page}.md when it is read then the legal name note stays`, () => {
+        assert.match(readText(`content/${language}/${page}.md`), /<!--\s*PROTO-6:/);
+      });
+    }
+  }
+});

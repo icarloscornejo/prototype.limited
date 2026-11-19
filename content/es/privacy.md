@@ -16,7 +16,7 @@ Esta política explica cómo Prototype ("nosotros") maneja los datos personales 
 
 ## Quiénes somos
 
-Prototype es una empresa de ingeniería con sede en El Salvador. Para cualquier pregunta o solicitud sobre privacidad, escriba a icarloscornejo@outlook.com.
+Prototype es una empresa de ingeniería con sede en El Salvador. Para cualquier pregunta o solicitud sobre privacidad, escriba a hello@prototype.limited.
 
 ## Este sitio
 

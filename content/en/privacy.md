@@ -16,7 +16,7 @@ This policy explains how Prototype ("we", "us") handles personal data on this we
 
 ## Who we are
 
-Prototype is an engineering company based in El Salvador. For any privacy question or request, write to icarloscornejo@outlook.com.
+Prototype is an engineering company based in El Salvador. For any privacy question or request, write to hello@prototype.limited.
 
 ## This website
 

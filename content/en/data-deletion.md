@@ -12,7 +12,7 @@ You can ask us to delete the personal data we hold about you, including messages
 
 ## How to ask
 
-1. Email icarloscornejo@outlook.com with the subject "Data deletion request".
+1. Email hello@prototype.limited with the subject "Data deletion request".
 2. Include the phone number or email you used, and the business you contacted, if any.
 3. We will confirm that we received your request and tell you when the data has been deleted.
 

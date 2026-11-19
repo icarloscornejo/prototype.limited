@@ -36,4 +36,4 @@ Estos términos se rigen por las leyes de El Salvador.
 
 ## Contacto
 
-Preguntas sobre estos términos: icarloscornejo@outlook.com.
+Preguntas sobre estos términos: hello@prototype.limited.

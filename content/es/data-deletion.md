@@ -12,7 +12,7 @@ Puede pedirnos que borremos los datos personales que tenemos sobre usted, inclui
 
 ## Cómo pedirlo
 
-1. Escriba a icarloscornejo@outlook.com con el asunto "Solicitud de eliminación de datos".
+1. Escriba a hello@prototype.limited con el asunto "Solicitud de eliminación de datos".
 2. Incluya el número de teléfono o el correo que usó, y la empresa que contactó, si aplica.
 3. Le confirmaremos que recibimos su solicitud y le avisaremos cuando los datos estén borrados.
 
