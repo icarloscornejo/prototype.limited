@@ -368,9 +368,78 @@ describe("contact details point at the company domain", () => {
     });
 
     for (const page of ["privacy", "terms"]) {
-      test(`given content/${language}/${page}.md when it is read then the legal name note stays`, () => {
-        assert.match(readText(`content/${language}/${page}.md`), /<!--\s*PROTO-6:/);
+      test(`given content/${language}/${page}.md when it is read then the legal name note is removed`, () => {
+        assert.doesNotMatch(readText(`content/${language}/${page}.md`), /PROTO-6/);
       });
     }
   }
+});
+
+describe("registered legal name and address", () => {
+  const LEGAL_NAME = "Prototype S.A.S. DE C.V.";
+  const ADDRESS = "Condominio Paseo del Prado, Poligono D, #394, Apopa, San Salvador, 1123, El Salvador";
+  const WHO_WE_ARE_HEADING = { en: "## Who we are", es: "## Quiénes somos" };
+  const NEW_DATE = "2026-11-19";
+  const OLD_DATE = "2026-11-17";
+  const CHANGED_PAGES = ["privacy", "terms"];
+
+  // The text of one "## " section, up to the next "## " heading.
+  function sectionOf(body, heading) {
+    const start = body.indexOf(heading);
+    if (start === -1) return "";
+    const rest = body.slice(start + heading.length);
+    const next = rest.search(/^## /m);
+    return next === -1 ? rest : rest.slice(0, next);
+  }
+
+  for (const language of LANGUAGES) {
+    test(`given ${language}/privacy when it is read then the registered address sits under Who we are`, () => {
+      const section = sectionOf(entries[`${language}/privacy`].body, WHO_WE_ARE_HEADING[language]);
+      assert.ok(section.includes(LEGAL_NAME), "legal name missing under Who we are");
+      assert.ok(section.includes(ADDRESS), "registered address missing under Who we are");
+    });
+
+    for (const page of CHANGED_PAGES) {
+      const entry = entries[`${language}/${page}`];
+
+      test(`given ${language}/${page} when it is read then the operator is the legal name and no bare operator sentence remains`, () => {
+        assert.ok(entry.body.includes(LEGAL_NAME), "legal name missing");
+        // These bodies only name the operator, so every mention must carry the full legal name.
+        assert.doesNotMatch(entry.body, /Prototype(?! S\.A\.S\. DE C\.V\.)/);
+        assert.doesNotMatch(entry.body, /C\.V\.\./, "double period after the legal name");
+      });
+
+      test(`given ${language}/${page} when it is read then Last updated is the date of the change`, () => {
+        assert.equal(entry.last_updated, NEW_DATE);
+        assert.equal(entry.body.match(DATE_LINE)[2], NEW_DATE);
+      });
+    }
+
+    // Guards: they pass before and after the change.
+    test(`given ${language}/data-deletion when it is read then its date is unchanged`, () => {
+      assert.equal(entries[`${language}/data-deletion`].last_updated, OLD_DATE);
+    });
+
+    for (const page of MAIN_PAGES) {
+      test(`given ${language}/${page} when it is read then it still has no date`, () => {
+        assert.equal(entries[`${language}/${page}`].last_updated, undefined);
+      });
+    }
+  }
+
+  for (const entry of pageEntries) {
+    test(`given ${entry.language}/${entry.page} when rendered then the footer shows the copyright with the legal name`, () => {
+      const footerText = htmlToText(regionOf(readPageHtml(entry), "footer"));
+      assert.ok(footerText.includes(`© ${new Date().getFullYear()} ${LEGAL_NAME}`), `footer text was: ${footerText}`);
+    });
+
+    test(`given ${entry.language}/${entry.page} when built then its route file exists at the same URL`, () => {
+      assert.ok(existsSync(distFileForPath(entry.path)), `${distFileForPath(entry.path)} missing`);
+    });
+  }
+
+  test("given the legal pages when their paths are read then the URLs are unchanged", () => {
+    const paths = legalEntries.map((entry) => entry.path).sort();
+    assert.deepEqual(paths, ["/data-deletion", "/es/data-deletion", "/es/privacy", "/es/terms", "/privacy", "/terms"]);
+  });
 });

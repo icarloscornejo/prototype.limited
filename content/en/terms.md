@@ -3,16 +3,14 @@ page: terms
 path: /terms
 title: Terms of Service | Prototype
 description: Terms for using the Prototype website.
-last_updated: 2026-11-17
+last_updated: 2026-11-19
 ---
-
-<!-- PROTO-6: replace "Prototype" with the registered legal name once the company is incorporated. -->
 
 # Terms of Service
 
-Last updated: 2026-11-17
+Last updated: 2026-11-19
 
-These terms cover the use of this website, run by Prototype ("we", "us").
+These terms cover the use of this website, run by Prototype S.A.S. DE C.V. ("we", "us").
 
 ## This website
 
@@ -24,7 +22,7 @@ Every project is governed by its own written agreement, which sets the scope, de
 
 ## Intellectual property
 
-The text, design and brand of this website belong to Prototype. You may link to it and quote it with attribution.
+The text, design and brand of this website belong to Prototype S.A.S. DE C.V. You may link to it and quote it with attribution.
 
 ## Liability
 

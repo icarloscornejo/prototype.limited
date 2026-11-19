@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import { OG_LOCALES, SITE_NAME, SWITCH_LABELS, getChrome } from "../lib/site";
+import { LEGAL_NAME, OG_LOCALES, SITE_NAME, SWITCH_LABELS, getChrome } from "../lib/site";
 import type { Language } from "../lib/site";
 
 interface Props {
@@ -46,6 +46,7 @@ const otherLocale = OG_LOCALES[chrome.switchTarget.language];
     <main><slot /></main>
     <footer>
       {chrome.footer.map((link) => <a href={link.href}>{link.label}</a>)}
+      <small>{`© ${new Date().getFullYear()} ${LEGAL_NAME}`}</small>
     </footer>
   </body>
 </html>

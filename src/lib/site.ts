@@ -9,6 +9,7 @@ export const LANGUAGES: Language[] = ["en", "es"];
 export const SWITCH_LABELS: Record<Language, string> = { en: "EN", es: "ES" };
 export const OG_LOCALES: Record<Language, string> = { en: "en_US", es: "es_LA" };
 export const SITE_NAME = "Prototype";
+export const LEGAL_NAME = "Prototype S.A.S. DE C.V.";
 
 // Explicit orders: the glob loader returns entries alphabetically.
 const NAV_PAGES = ["services", "about", "contact"];

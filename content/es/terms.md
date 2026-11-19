@@ -3,16 +3,14 @@ page: terms
 path: /es/terms
 title: Términos de servicio | Prototype
 description: Términos de uso del sitio de Prototype.
-last_updated: 2026-11-17
+last_updated: 2026-11-19
 ---
-
-<!-- PROTO-6: cambiar "Prototype" por la razón social inscrita cuando la empresa esté constituida. -->
 
 # Términos de servicio
 
-Última actualización: 2026-11-17
+Última actualización: 2026-11-19
 
-Estos términos cubren el uso de este sitio, operado por Prototype ("nosotros").
+Estos términos cubren el uso de este sitio, operado por Prototype S.A.S. DE C.V. ("nosotros").
 
 ## Este sitio
 
@@ -24,7 +22,7 @@ Cada proyecto se rige por su propio acuerdo escrito, que define el alcance, los 
 
 ## Propiedad intelectual
 
-Los textos, el diseño y la marca de este sitio pertenecen a Prototype. Puede enlazarlo y citarlo mencionando la fuente.
+Los textos, el diseño y la marca de este sitio pertenecen a Prototype S.A.S. DE C.V. Puede enlazarlo y citarlo mencionando la fuente.
 
 ## Responsabilidad
 

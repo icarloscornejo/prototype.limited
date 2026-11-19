@@ -3,20 +3,18 @@ page: privacy
 path: /es/privacy
 title: Política de privacidad | Prototype
 description: Cómo maneja Prototype los datos personales en este sitio y en los servicios que presta a sus clientes.
-last_updated: 2026-11-17
+last_updated: 2026-11-19
 ---
-
-<!-- PROTO-6: cambiar "Prototype" por la razón social inscrita y agregar la dirección registrada cuando la empresa esté constituida. -->
 
 # Política de privacidad
 
-Última actualización: 2026-11-17
+Última actualización: 2026-11-19
 
-Esta política explica cómo Prototype ("nosotros") maneja los datos personales en este sitio y en los servicios de software que construimos y operamos para nuestros clientes empresariales, incluidos los servicios que usan la plataforma de WhatsApp Business.
+Esta política explica cómo Prototype S.A.S. DE C.V. ("nosotros") maneja los datos personales en este sitio y en los servicios de software que construimos y operamos para nuestros clientes empresariales, incluidos los servicios que usan la plataforma de WhatsApp Business.
 
 ## Quiénes somos
 
-Prototype es una empresa de ingeniería con sede en El Salvador. Para cualquier pregunta o solicitud sobre privacidad, escriba a hello@prototype.limited.
+Prototype S.A.S. DE C.V. es una empresa de ingeniería con sede en El Salvador. Nuestro domicilio registrado es Condominio Paseo del Prado, Poligono D, #394, Apopa, San Salvador, 1123, El Salvador. Para cualquier pregunta o solicitud sobre privacidad, escriba a hello@prototype.limited.
 
 ## Este sitio
 
