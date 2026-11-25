@@ -42,9 +42,9 @@ const entries = Object.fromEntries(
     [...MAIN_PAGES, ...LEGAL_PAGES].map((page) => [`${language}/${page}`, loadEntry(language, page)]),
   ),
 );
-const pageEntries = LANGUAGES.flatMap((language) =>
-  [...MAIN_PAGES, ...LEGAL_PAGES].map((page) => entries[`${language}/${page}`]),
-);
+// services, about and contact stay in content/ as the source of the home copy but build no page of their own.
+const BUILT_PAGES = ["home", ...LEGAL_PAGES];
+const pageEntries = LANGUAGES.flatMap((language) => BUILT_PAGES.map((page) => entries[`${language}/${page}`]));
 const legalEntries = pageEntries.filter((entry) => LEGAL_PAGES.includes(entry.page));
 
 const DATE_LINE = /^(.+): (\d{4}-\d{2}-\d{2})$/m;
@@ -148,7 +148,8 @@ describe("pages build", () => {
 });
 
 describe("routes render content word for word", () => {
-  for (const entry of pageEntries) {
+  // The home is checked line by line in forma.test.mjs because it merges four content files.
+  for (const entry of legalEntries) {
     test(`given ${entry.language}/${entry.page} when built then ${entry.path} renders its markdown body word for word`, () => {
       const file = distFileForPath(entry.path);
       assert.ok(existsSync(file), `${file} missing`);
@@ -158,7 +159,7 @@ describe("routes render content word for word", () => {
 });
 
 describe("content links work as written", () => {
-  for (const entry of pageEntries) {
+  for (const entry of legalEntries) {
     const internalLinks = [...entry.body.matchAll(/\]\((\/[^)\s]*)\)/g)].map((match) => match[1]);
     for (const target of internalLinks) {
       test(`given ${entry.language}/${entry.page} when it links ${target} then the link is unchanged and the target exists`, () => {
@@ -201,11 +202,11 @@ describe("header name and nav", () => {
       const nameAnchor = anchors.find((anchor) => anchor.text === "Prototype");
       assert.ok(nameAnchor, "name link missing");
       assert.equal(nameAnchor.attributes.href, languageHome.path);
-      for (const page of ["services", "about", "contact"]) {
+      for (const page of ["about", "services", "contact"]) {
         const navEntry = entries[`${entry.language}/${page}`];
         const navAnchor = anchors.find((anchor) => anchor.text === labelFromTitle(navEntry));
         assert.ok(navAnchor, `nav link ${labelFromTitle(navEntry)} missing`);
-        assert.equal(navAnchor.attributes.href, navEntry.path);
+        assert.equal(navAnchor.attributes.href, `${languageHome.path}#${page}`);
       }
     });
   }
@@ -265,9 +266,12 @@ describe("head metadata", () => {
       assert.ok(iconLink, "icon link missing");
       assert.ok(existsSync(`dist${new URL(iconLink.href, SITE_ORIGIN).pathname}`), `${iconLink.href} missing in dist`);
       assert.match(metaContent(html, "name", "viewport") ?? "", /width=device-width/);
-      assert.doesNotMatch(html, /<img\b/i);
-      assert.doesNotMatch(html, /@font-face|\.(woff2?|ttf|otf)\b/i);
-      assert.doesNotMatch(html, /<script\b/i);
+      // Images and scripts are allowed only when they are our own: an img needs alt text and a same-origin src.
+      for (const image of tagsNamed(html, "img")) {
+        assert.ok(image.alt, "img without alt");
+        assert.match(image.src ?? "", /^\/(?!\/)/, "img must be same-origin");
+      }
+      assert.doesNotMatch(html, /<script\b[^>]*\bsrc=["'](https?:)?\/\//i);
     });
 
     test(`given ${label} when the inline CSS is read then it follows the color scheme and wraps long words`, () => {
@@ -324,7 +328,7 @@ describe("contact details point at the company domain", () => {
   const OLD_EMAIL = "icarloscornejo@outlook.com";
   const NEW_LINKEDIN = "https://www.linkedin.com/company/prototype-sv";
   const OLD_LINKEDIN_ID = "company/10868436";
-  const EMAIL_PAGES = ["contact", ...LEGAL_PAGES];
+  const EMAIL_PAGES = ["home", ...LEGAL_PAGES];
 
   const htmlFilesIn = (directory) =>
     existsSync(directory)
@@ -355,10 +359,10 @@ describe("contact details point at the company domain", () => {
       });
     }
 
-    test(`given ${language}/contact when it renders then LinkedIn links to the company page`, () => {
-      const anchors = anchorsIn(regionOf(readPageHtml(entries[`${language}/contact`]), "main"));
+    test(`given ${language}/home when it renders then LinkedIn links to the company page`, () => {
+      const anchors = anchorsIn(regionOf(readPageHtml(entries[`${language}/home`]), "main"));
       assert.ok(
-        anchors.some((anchor) => anchor.attributes.href === NEW_LINKEDIN && anchor.text === NEW_LINKEDIN),
+        anchors.some((anchor) => anchor.attributes.href === NEW_LINKEDIN && anchor.text === entries[`${language}/home`].linkedin_label),
         `${NEW_LINKEDIN} missing in main`,
       );
     });

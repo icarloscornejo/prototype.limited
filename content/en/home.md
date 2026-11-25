@@ -3,6 +3,11 @@ page: home
 path: /
 title: Prototype | Agentic AI engineering, from prototype to production
 description: A small senior team that builds AI agents and AI features into real products. Few projects at a time, full attention on each one.
+experience_headline: Over a decade
+experience_caption: Founder's experience shipping apps
+experience_companies: Founder's professional experience
+services_included: What's included
+linkedin_label: LinkedIn ↗
 ---
 
 # Agentic AI engineering, from prototype to production.
@@ -33,4 +38,4 @@ A senior engineer embedded with your team to take AI from idea to production, fo
 
 ## Background
 
-Founded by an engineer with over a decade shipping apps at Disney+, Nike, Sephora and Ticketmaster.
+Founded by an engineer with over a decade shipping apps for global companies.

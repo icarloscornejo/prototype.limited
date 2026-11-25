@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "test": "node --test --test-concurrency=1 tests/scaffold.test.mjs tests/pages.test.mjs"
+    "test": "node --test --test-concurrency=1 tests/scaffold.test.mjs tests/pages.test.mjs tests/forma.test.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "0.4.10",

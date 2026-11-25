@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
-import { LEGAL_NAME, OG_LOCALES, SITE_NAME, SWITCH_LABELS, getChrome } from "../lib/site";
+import Mark from "../components/Mark.astro";
+import { LEGAL_NAME, OG_LOCALES, SITE_NAME, SKIP_LINK_LABELS, SWITCH_LABELS, getChrome } from "../lib/site";
 import type { Language } from "../lib/site";
 
 interface Props {
@@ -8,9 +9,10 @@ interface Props {
   page: string;
   title: string;
   description: string;
+  mainClass?: string;
 }
 
-const { language, page, title, description } = Astro.props;
+const { language, page, title, description, mainClass } = Astro.props;
 const chrome = await getChrome(language, page, Astro.site!);
 const otherLocale = OG_LOCALES[chrome.switchTarget.language];
 ---
@@ -20,6 +22,7 @@ const otherLocale = OG_LOCALES[chrome.switchTarget.language];
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
@@ -33,20 +36,33 @@ const otherLocale = OG_LOCALES[chrome.switchTarget.language];
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    <header>
-      <a class="brand" href={chrome.homeHref}>{SITE_NAME}</a>
-      <nav>
-        {chrome.nav.map((link) => <a href={link.href}>{link.label}</a>)}
-      </nav>
-      <div class="language-switch">
-        <span aria-current="true">{SWITCH_LABELS[language]}</span>
-        <a lang={chrome.switchTarget.language} hreflang={chrome.switchTarget.language} href={chrome.switchTarget.href}>{chrome.switchTarget.label}</a>
+    <a class="skip-link" href="#main">{SKIP_LINK_LABELS[language]}</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href={chrome.homeHref}><span class="brand-mark"><Mark /></span>{SITE_NAME}</a>
+        <div class="header-actions">
+          <nav class="site-nav">
+            {chrome.nav.map((link) => <a href={link.href}>{link.label}</a>)}
+          </nav>
+          <div class="language-switch">
+            <span aria-current="true">{SWITCH_LABELS[language]}</span>
+            <a lang={chrome.switchTarget.language} hreflang={chrome.switchTarget.language} href={chrome.switchTarget.href}>{chrome.switchTarget.label}</a>
+          </div>
+        </div>
       </div>
     </header>
-    <main><slot /></main>
-    <footer>
-      {chrome.footer.map((link) => <a href={link.href}>{link.label}</a>)}
-      <small>{`© ${new Date().getFullYear()} ${LEGAL_NAME}`}</small>
+    <main id="main" tabindex="-1" class={mainClass}><slot /></main>
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <div class="footer-links">
+          {chrome.footer.map((link) => <a href={link.href}>{link.label}</a>)}
+        </div>
+        <small>{`© ${new Date().getFullYear()} ${LEGAL_NAME}`}</small>
+      </div>
     </footer>
+    <script>
+      import "../scripts/wheel-easing";
+      import "../scripts/nav-current";
+    </script>
   </body>
 </html>

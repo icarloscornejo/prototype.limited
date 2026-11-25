@@ -3,6 +3,11 @@ page: home
 path: /es/
 title: Prototype | Ingeniería de IA agéntica, de prototipo a producción
 description: Un equipo pequeño y senior que construye agentes de IA y funciones de IA en productos reales. Pocos proyectos a la vez, atención completa en cada uno.
+experience_headline: Más de una década
+experience_caption: Experiencia del fundador lanzando apps
+experience_companies: Experiencia profesional del fundador
+services_included: Qué incluye
+linkedin_label: LinkedIn ↗
 ---
 
 # Ingeniería de IA agéntica, de prototipo a producción.
@@ -33,4 +38,4 @@ Un ingeniero senior integrado a su equipo para llevar la IA de la idea a producc
 
 ## Trayectoria
 
-Fundada por un ingeniero con más de una década construyendo apps en Disney+, Nike, Sephora y Ticketmaster.
+Fundada por un ingeniero con más de una década construyendo apps para empresas globales.

@@ -119,14 +119,15 @@ describe("cloudflare documentation", () => {
 describe("no tracking in the built output", () => {
   const distFiles = () => listFilesRecursively("dist");
 
-  test("given dist when built then no JavaScript files are emitted", () => {
+  test("given dist when built then JavaScript files exist only under the bundled assets folder", () => {
     assert.ok(distFiles().length > 0, "dist is empty");
-    assert.deepEqual(distFiles().filter((file) => /\.(m?js)$/.test(file)), []);
+    const scripts = distFiles().filter((file) => /\.(m?js)$/.test(file));
+    assert.deepEqual(scripts.filter((file) => !file.startsWith(join("dist", "_astro"))), []);
   });
 
-  test("given dist when scanned then no script, cookie or tracker patterns exist", () => {
+  test("given dist when scanned then no external script, cookie or tracker patterns exist", () => {
     assert.ok(distFiles().length > 0, "dist is empty");
-    const forbidden = [/<script/i, /document\.cookie/i, /set-cookie/i, /gtag\(/i, /googletagmanager\.com/i];
+    const forbidden = [/<script\b[^>]*\bsrc=["'](https?:)?\/\//i, /document\.cookie/i, /set-cookie/i, /gtag\(/i, /googletagmanager\.com/i];
     for (const file of distFiles()) {
       const content = readText(file);
       for (const pattern of forbidden) {

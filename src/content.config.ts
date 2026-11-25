@@ -10,6 +10,12 @@ const pageSchema = z.object({
   title: z.string(),
   description: z.string(),
   last_updated: z.coerce.date().optional(),
+  // Short labels of the home sections that the page bodies do not contain (home.md only).
+  experience_headline: z.string().optional(),
+  experience_caption: z.string().optional(),
+  experience_companies: z.string().optional(),
+  services_included: z.string().optional(),
+  linkedin_label: z.string().optional(),
 });
 
 export const collections = {

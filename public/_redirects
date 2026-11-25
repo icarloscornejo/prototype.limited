@@ -1,0 +1,13 @@
+# The old pages are sections of the home now. Each URL is listed with and without the trailing slash.
+/services /#services 301
+/services/ /#services 301
+/about /#about 301
+/about/ /#about 301
+/contact /#contact 301
+/contact/ /#contact 301
+/es/services /es/#services 301
+/es/services/ /es/#services 301
+/es/about /es/#about 301
+/es/about/ /es/#about 301
+/es/contact /es/#contact 301
+/es/contact/ /es/#contact 301

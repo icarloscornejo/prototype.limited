@@ -11,7 +11,7 @@ Prototype es una boutique de ingeniería de El Salvador. Construimos IA agéntic
 
 Somos pequeños a propósito. Tomamos pocos proyectos a la vez para que cada uno tenga atención senior de principio a fin, y nadie aprenda con su presupuesto.
 
-Fundada por un ingeniero con más de una década construyendo apps en Disney+, Nike, Sephora y Ticketmaster.
+Fundada por un ingeniero con más de una década construyendo apps para empresas globales.
 
 ## En qué creemos
 

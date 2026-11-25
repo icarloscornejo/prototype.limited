@@ -17,7 +17,7 @@ Pages: home, services, about, contact, privacy, terms, data-deletion. The three 
 
 ## Development
 
-Astro, static output, no client JavaScript. Needs Node 24 (see `.nvmrc`; Astro requires 22.23.4 or newer) and pnpm.
+Astro, static output. JavaScript is only a progressive enhancement (see Rules). Needs Node 24 (see `.nvmrc`; Astro requires 22.23.4 or newer) and pnpm.
 
 ```sh
 pnpm install   # resolves only from registry.npmjs.org, pinned in .npmrc
@@ -42,5 +42,13 @@ Do not enable Cloudflare Web Analytics: it injects a script, and the site has no
 ## Rules
 
 - No cookies, analytics or tracking scripts.
+- JavaScript is only a progressive enhancement, from our own bundled files in `src/scripts/` (wheel easing and the active nav link). No external scripts, and every page must work and read fully with JavaScript off.
+- The site makes no request to another host: the type is the system font stack (no font file ships) and the company logos are self-hosted.
 - No em-dash character (U+2014) anywhere in the repo or the site.
 - Commits, branches and PR titles carry the Jira key: `PROTO-N: ...`. One commit per PR.
+
+## Design
+
+The home is one page (`/` and `/es/`) built from `content/`: `home.md`, `services.md`, `about.md` and `contact.md` are the copy of its sections, plus five short labels in the front matter of `home.md`. `/services`, `/about`, `/contact` and their `/es/` versions redirect to the home sections through `public/_redirects` (Cloudflare Pages). The legal pages keep their own URLs.
+
+The logos in `public/logos/` are the files provided by Carlos, cleaned of editor metadata.

@@ -1,0 +1,132 @@
+---
+import Mark from "./Mark.astro";
+import type { HomeCopy } from "../lib/home-copy";
+
+interface Props {
+  copy: HomeCopy;
+}
+
+const { copy } = Astro.props;
+const { hero, about, services, work, contact } = copy;
+
+// Width and height are the viewBox of each file, so the browser reserves the right box before the image loads.
+const COMPANIES = [
+  { name: "Disney+", file: "disney-plus", width: 1041, height: 565 },
+  { name: "Nike", file: "nike", width: 153, height: 56 },
+  { name: "Sephora", file: "sephora", width: 1000, height: 129.6 },
+  { name: "Ticketmaster", file: "ticketmaster", width: 540.69, height: 76.68 },
+  { name: "Indeed", file: "indeed", width: 1486.1, height: 400 },
+  { name: "Numerator", file: "numerator", width: 147, height: 23 },
+];
+
+// Decorative line icons, one per service, drawn on a 48 unit grid.
+const SERVICE_ICONS = [
+  { shapes: [{ tag: "rect", attributes: { x: 6, y: 9, width: 36, height: 30, rx: 3 } }], path: "M6 17h36M14 24l-5 5 5 5m20-10 5 5-5 5m-13 1 6-12" },
+  { shapes: [{ tag: "rect", attributes: { x: 10, y: 5, width: 28, height: 38, rx: 4 } }], path: "M20 10h8m-7 28h6m-3-24 2.6 7.4L34 24l-7.4 2.6L24 34l-2.6-7.4L14 24l7.4-2.6Z" },
+  {
+    shapes: [
+      { tag: "rect", attributes: { x: 5, y: 5, width: 13, height: 13, rx: 2 } },
+      { tag: "rect", attributes: { x: 30, y: 30, width: 13, height: 13, rx: 2 } },
+      { tag: "rect", attributes: { x: 30, y: 5, width: 13, height: 13, rx: 2 } },
+    ],
+    path: "M18 11.5h12M36.5 18v12M11.5 18v13a5.5 5.5 0 0 0 5.5 5.5h13",
+  },
+];
+---
+
+<div id="home" class="home-page">
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="wrap hero-inner">
+      <h1 id="hero-heading"><span>{hero.firstLine}</span> <span>{hero.secondLine}</span></h1>
+      <div class="intro">
+        <p>{hero.intro}</p>
+        <p class="action hero-actions">
+          <a href="#contact">{hero.primaryAction}</a>
+          <a class="secondary-action" href="#services">{hero.secondaryAction}</a>
+        </p>
+      </div>
+      <div class="art hero-art" aria-hidden="true">
+        <div class="hero-frame"><Mark /></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="section background credibility" aria-labelledby="about-heading">
+    <div class="wrap">
+      <div class="background-heading">
+        <h2 id="about-heading">{about.heading}</h2>
+        <div class="experience-stat"><span>{about.headline}</span><span class="experience-caption">{about.caption}</span></div>
+      </div>
+      <div class="background-copy">
+        <p class="background-lead">{about.lead}</p>
+        {about.context.map((paragraph) => <p class="background-context">{paragraph}</p>)}
+        <details class="beliefs">
+          <summary>{about.beliefsTitle}</summary>
+          <ul>{about.beliefs.map((belief) => <li>{belief}</li>)}</ul>
+        </details>
+      </div>
+      <div class="experience-companies">
+        <p>{about.companiesLabel}</p>
+        <ul class="company-wordmarks">
+          {COMPANIES.map((company) => (
+            <li class={`wordmark logo-${company.file}`}>
+              <img src={`/logos/${company.file}.svg`} alt={company.name} width={company.width} height={company.height} decoding="async" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="section services" aria-labelledby="services-heading">
+    <div class="wrap">
+      <h2 id="services-heading">{services.heading}</h2>
+      <p class="services-intro">{services.intro}</p>
+      <div class="service-list">
+        {services.items.map((service, index) => (
+          <article class="service" aria-labelledby={`offering-${index + 1}`}>
+            <div class="service-title">
+              <div class="service-marker">
+                <span class="service-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  {SERVICE_ICONS[index].shapes.map((shape) => <rect {...shape.attributes} />)}
+                  <path d={SERVICE_ICONS[index].path} />
+                </svg>
+              </div>
+              <h3 id={`offering-${index + 1}`}>{service.title}</h3>
+              <p class="service-fit">{service.fit}</p>
+              <p class="service-duration">{service.duration}</p>
+            </div>
+            <div class="service-body">
+              <p class="service-description">{service.description}</p>
+              <h4>{services.included}</h4>
+              <ul class="service-deliverables">{service.deliverables.map((deliverable) => <li>{deliverable}</li>)}</ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="work" class="section work" aria-labelledby="work-heading">
+    <div class="wrap">
+      <h2 id="work-heading">{work.heading}</h2>
+      <ul class="principles">
+        {work.principles.map((principle) => <li><strong>{principle.lead}</strong> {principle.rest}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact" class="section home-contact" aria-labelledby="contact-heading">
+    <div class="wrap contact-grid">
+      <h2 id="contact-heading">{contact.heading}</h2>
+      <div class="contact-copy">
+        <p>{contact.intro}</p>
+        <p class="action contact-actions">
+          <a href={`mailto:${contact.email}`}>{contact.email}</a>
+          <a class="email-link" href={contact.linkedinUrl}>{contact.linkedinLabel}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>

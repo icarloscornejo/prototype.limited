@@ -11,7 +11,7 @@ Prototype is an engineering boutique from El Salvador. We build agentic AI and A
 
 We stay small on purpose. We take a few projects at a time so each one gets senior attention from start to finish, and no one learns on your budget.
 
-Founded by an engineer with over a decade shipping apps at Disney+, Nike, Sephora and Ticketmaster.
+Founded by an engineer with over a decade shipping apps for global companies.
 
 ## What we believe
 
