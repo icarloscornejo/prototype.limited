@@ -124,7 +124,8 @@ h3 { font-size: clamp(29px, 3vw, 50px); font-weight: 630; }
     linear-gradient(90deg, transparent 0 12%, color-mix(in srgb, var(--line) 55%, transparent) 12% 12.5%, transparent 12.5% 87.5%, color-mix(in srgb, var(--line) 55%, transparent) 87.5% 88%, transparent 88% 100%),
     linear-gradient(180deg, color-mix(in srgb, var(--surface) 80%, var(--panel)), color-mix(in srgb, var(--panel) 92%, var(--surface)));
 }
-.hero-frame::before { content: ""; position: absolute; inset: 18px 24px; border-block: 1px solid color-mix(in srgb, var(--line) 60%, transparent); opacity: 0.65; }
+/* The lines overshoot the rules by the same 18px the rules overshoot the lines, so the "#" keeps its shape at every width. */
+.hero-frame::before { content: ""; position: absolute; inset: 18px calc(12% - 18px); border-block: 1px solid color-mix(in srgb, var(--line) 60%, transparent); opacity: 0.65; }
 .hero-frame svg { width: min(34%, 180px); aspect-ratio: 260 / 120; height: auto; display: block; overflow: visible; color: var(--mark); }
 
 /* About */
@@ -142,16 +143,21 @@ h3 { font-size: clamp(29px, 3vw, 50px); font-weight: 630; }
 .beliefs li { margin: 8px 0; }
 .experience-companies { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 24px; }
 .experience-companies > p { font-size: 14px; font-weight: 550; color: var(--muted); line-height: 1.5; }
-.company-wordmarks { list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px; align-items: end; }
-.wordmark { min-height: 84px; border-top: 1px solid var(--line); padding-top: 18px; display: flex; align-items: flex-end; }
-/* One height per logo so their weight reads even in a row, whatever the shape of the artwork. */
-.wordmark img { height: var(--logo-height, 32px); width: auto; max-width: 100%; object-fit: contain; object-position: left bottom; display: block; filter: brightness(0); }
-.logo-disney-plus { --logo-height: 52px; }
-.logo-nike { --logo-height: 34px; }
-.logo-sephora { --logo-height: 20px; }
-.logo-ticketmaster { --logo-height: 20px; }
-.logo-indeed { --logo-height: 32px; }
-.logo-numerator { --logo-height: 22px; }
+.company-wordmarks { list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px; }
+/* Every cell is the same box and the logo sits in its middle, both ways. */
+.wordmark { height: 100px; padding-inline: 14px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; container-type: inline-size; }
+/* One height and one max width per logo so their weight reads even in a row, whatever the shape of the artwork. */
+/* The second term keeps a wide wordmark inside its cell on narrow desktops: it shrinks with the cell instead of being clipped. */
+.wordmark img { width: auto; height: auto; max-height: min(var(--logo-height, 40px), calc(100cqw / var(--logo-ratio, 2))); max-width: var(--logo-max-width, 100%); object-fit: contain; object-position: center; display: block; filter: brightness(0); }
+/* Disney+ and Indeed carry an arch or a dot above the letters, so the ink sits low in the box: nudge it up to center the letters. */
+/* --logo-ratio is the width over the height of each file's artwork. */
+.logo-disney-plus { --logo-height: 65px; --logo-ratio: 1.84; }
+.logo-disney-plus img, .logo-indeed img { translate: 0 -5px; }
+.logo-nike { --logo-height: 40px; --logo-ratio: 2.73; }
+.logo-sephora { --logo-height: 25px; --logo-ratio: 7.72; }
+.logo-ticketmaster { --logo-height: 25px; --logo-ratio: 7.05; }
+.logo-indeed { --logo-height: 40px; --logo-ratio: 3.72; }
+.logo-numerator { --logo-height: 28px; --logo-ratio: 6.39; }
 @media (prefers-color-scheme: dark) {
   .wordmark img { filter: brightness(0) invert(1); }
 }
@@ -204,6 +210,13 @@ h3 { font-size: clamp(29px, 3vw, 50px); font-weight: 630; }
 
 @media (max-width: 1100px) {
   .company-wordmarks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Three columns put the third and fourth logos on the edges, so the two best known take the middle column. */
+  .logo-sephora { order: 1; }
+  .logo-nike { order: 2; }
+  .logo-ticketmaster { order: 3; }
+  .logo-indeed { order: 4; }
+  .logo-disney-plus { order: 5; }
+  .logo-numerator { order: 6; }
 }
 
 @media (max-width: 850px) {
@@ -239,6 +252,8 @@ h3 { font-size: clamp(29px, 3vw, 50px); font-weight: 630; }
   .hero-art { aspect-ratio: 1.9; }
   .hero-actions { gap: 10px 16px; }
   .company-wordmarks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Two columns put Nike and Disney+ in the middle row already, so the source order is right again. */
+  .logo-numerator, .logo-nike, .logo-sephora, .logo-ticketmaster, .logo-disney-plus, .logo-indeed { order: 0; }
 }
 
 @media (max-width: 420px) {

@@ -16,7 +16,7 @@ const TITLE_SUFFIX = / \| Prototype$/;
 let buildResult;
 before(() => {
   // --force: the content cache is keyed by file contents, so editing the markdown plugin alone would leave stale HTML.
-  buildResult = spawnSync("pnpm", ["exec", "astro", "build", "--force"], { encoding: "utf8" });
+  buildResult = spawnSync("pnpm", ["exec", "astro", "build", "--force"], { encoding: "utf8", env: { ...process.env, PROTO_GRID: "" } });
 });
 
 function readText(path) {

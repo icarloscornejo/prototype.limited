@@ -11,7 +11,7 @@ const EM_DASH = String.fromCharCode(0x2014);
 // runs and fails on its own even when the build is missing (red commit).
 let buildResult;
 before(() => {
-  buildResult = spawnSync("pnpm", ["build"], { encoding: "utf8" });
+  buildResult = spawnSync("pnpm", ["build"], { encoding: "utf8", env: { ...process.env, PROTO_GRID: "" } });
 });
 
 function readText(path) {

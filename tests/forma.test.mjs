@@ -1,12 +1,14 @@
 import { before, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 // Node does not promise to run the files in the order they are listed, so this file builds dist/ itself.
 before(() => {
-  const build = spawnSync("pnpm", ["exec", "astro", "build"], { encoding: "utf8" });
+  // PROTO_GRID is cleared so a value left in the shell can never put the review overlay into dist/.
+  const build = spawnSync("pnpm", ["exec", "astro", "build"], { encoding: "utf8", env: { ...process.env, PROTO_GRID: "" } });
   assert.equal(build.status, 0, build.stderr);
 });
 const LANGUAGES = ["en", "es"];
@@ -36,7 +38,8 @@ const FOUNDER_SENTENCE = {
   es: "Fundada por un ingeniero con más de una década construyendo apps para empresas globales.",
 };
 
-const COMPANIES = ["Disney+", "Nike", "Sephora", "Ticketmaster", "Indeed", "Numerator"];
+// The best-known brands sit in positions 3 and 4, the center of the six column row.
+const COMPANIES = ["Sephora", "Ticketmaster", "Nike", "Disney+", "Indeed", "Numerator"];
 
 const readText = (path) => (existsSync(path) ? readFileSync(path, "utf8") : "");
 
@@ -245,7 +248,8 @@ describe("page chrome", () => {
   test("given the built home when its inline CSS is read then the Paper lines panel keeps the design's numbers", () => {
     const css = inlineStyles(homeHtml("en")).replace(/\s+/g, "");
     assert.match(css, /\.hero-frame\{[^}]*min-height:128px/);
-    assert.match(css, /\.hero-frame:before\{[^}]*inset:18px24px/);
+    // The horizontal lines overshoot the rules by the same 18px the rules overshoot the lines, at every width.
+    assert.match(css, /\.hero-frame:before\{[^}]*inset:18pxcalc\(12%-18px\)/);
     assert.match(css, /\.hero-frame:before\{[^}]*border-block:1pxsolid/);
     assert.match(css, /\.hero-framesvg\{[^}]*width:min\(34%,180px\)/);
     for (const stop of ["12%", "12.5%", "87.5%", "88%"]) assert.ok(css.includes(stop), `gradient stop ${stop} missing`);
@@ -409,5 +413,86 @@ describe("scripts and requests", () => {
   test("given package.json and the lockfile when read then the font dependency is gone", () => {
     assert.doesNotMatch(readText("package.json"), /fontsource/);
     assert.doesNotMatch(readText("pnpm-lock.yaml"), /fontsource/);
+  });
+});
+
+describe("brand details", () => {
+  const PNG_SIGNATURE = "89504e470d0a1a0a";
+  const pngSize = (path) => {
+    const bytes = readFileSync(path);
+    assert.equal(bytes.subarray(0, 8).toString("hex"), PNG_SIGNATURE, `${path} is not a PNG`);
+    return `${bytes.readUInt32BE(16)}x${bytes.readUInt32BE(20)}`;
+  };
+
+  for (const language of LANGUAGES) {
+    test(`given the ${language} home when built then the head declares the svg icon first, a 32px png and the apple touch icon`, () => {
+      const links = tagsNamed(homeHtml(language), "link");
+      const icons = links.filter((link) => link.rel === "icon");
+      assert.equal(icons[0]?.href, "/favicon.svg", "the svg icon comes first");
+      assert.equal(icons[0]?.type, "image/svg+xml");
+      assert.ok(icons.some((link) => link.href === "/favicon-32.png" && link.sizes === "32x32" && link.type === "image/png"));
+      assert.ok(links.some((link) => link.rel === "apple-touch-icon" && link.href === "/apple-touch-icon.png"));
+    });
+  }
+
+  test("given the icon files when read then they are the Prototype mark on the site background, and the pngs have their sizes", () => {
+    const svg = readText("dist/favicon.svg");
+    assert.match(svg, /<polygon\b/);
+    assert.match(svg, /<circle\b/);
+    // One look for every tab: the site's own light background with the dark mark, no theme switch.
+    assert.match(svg, /<rect\b[^>]*fill="#f8f6f0"/);
+    assert.doesNotMatch(svg, /prefers-color-scheme/);
+    assert.doesNotMatch(svg, /<text\b/, "the old P lettermark is gone");
+    assert.equal(pngSize("dist/favicon-32.png"), "32x32");
+    assert.equal(pngSize("dist/apple-touch-icon.png"), "180x180");
+  });
+
+  test("given the logo cells when styled then each logo is centered both ways and the width and height attributes follow the artwork", () => {
+    const css = inlineStyles(homeHtml("en")).replace(/\s+/g, "");
+    assert.match(css, /\.wordmark\{[^}]*align-items:center/);
+    assert.match(css, /\.wordmark\{[^}]*justify-content:center/);
+    assert.doesNotMatch(css, /\.wordmark\{[^}]*padding-top/);
+    const about = homeHtml("en").match(/id="about"[\s\S]*?id="services"/)?.[0] ?? "";
+    for (const image of tagsNamed(about, "img")) {
+      const [, , viewBoxWidth, viewBoxHeight] = readText(`dist${image.src}`).match(/viewBox="([^"]+)"/)[1].split(/[\s,]+/).map(Number);
+      const drift = Math.abs(image.width / image.height / (viewBoxWidth / viewBoxHeight) - 1);
+      assert.ok(drift < 0.001, `${image.src} width and height drift from its viewBox by ${drift}`);
+    }
+  });
+
+  test("given the three column layout when styled then Nike and Disney+ take the middle column and the two column layout resets that", () => {
+    const css = inlineStyles(homeHtml("en")).replace(/\s+/g, "");
+    // The minifier writes (max-width: 1100px) as (width<=1100px).
+    const midBlock = css.match(/@media\(width<=1100px\)\{(?:[^{}]|\{[^}]*\})*\}/)?.[0] ?? "";
+    assert.match(midBlock, /\.logo-nike\{[^}]*order:/);
+    assert.match(midBlock, /\.logo-disney-plus\{[^}]*order:/);
+    const narrowBlock = css.match(/@media\(width<=600px\)\{(?:[^{}]|\{[^}]*\})*\}/)?.[0] ?? "";
+    assert.match(narrowBlock, /\.logo-nike[^{}]*\{[^}]*order:0/);
+    assert.match(narrowBlock, /\.logo-disney-plus[^{}]*\{[^}]*order:0/);
+  });
+
+  test("given the default build when every file in dist is read then the grid overlay marker is nowhere", () => {
+    for (const file of filesIn("dist")) {
+      if (/\.(png|ico|woff2?)$/.test(file)) continue;
+      assert.doesNotMatch(readText(file), /data-proto-grid/, file);
+    }
+  });
+
+  test("given a build with PROTO_GRID set when the home is read then the overlay script is a module outside main", () => {
+    const outDir = mkdtempSync(join(tmpdir(), "proto-grid-"));
+    try {
+      const build = spawnSync("pnpm", ["exec", "astro", "build", "--outDir", outDir], { encoding: "utf8", env: { ...process.env, PROTO_GRID: "1" } });
+      assert.equal(build.status, 0, build.stderr);
+      for (const path of ["index.html", "es/index.html"]) {
+        const html = readText(join(outDir, path));
+        assert.match(html, /data-proto-grid/, path);
+        assert.doesNotMatch(regionOf(html, "main"), /data-proto-grid/, "the overlay script is not inside main");
+        const overlay = [...html.matchAll(/<script\b([^>]*)>([^<]*data-proto-grid[^<]*)<\/script>/g)];
+        assert.equal(overlay.length, 1, path);
+        assert.equal(attributesOf(overlay[0][1]).type, "module");
+      }
+    } finally {
+      rmSync(outDir, { recursive: true, force: true });
+    }
   });
 });
