@@ -14,7 +14,7 @@ Estos términos cubren el uso de este sitio, operado por Prototype S.A.S. DE C.V
 
 ## Este sitio
 
-El contenido de este sitio es solo informativo. No es una oferta y no crea ningún acuerdo entre usted y nosotros.
+El contenido de este sitio es solo informativo. No es una oferta y no crea ningún acuerdo entre tú y nosotros.
 
 ## Trabajar con nosotros
 
@@ -22,7 +22,7 @@ Cada proyecto se rige por su propio acuerdo escrito, que define el alcance, los 
 
 ## Propiedad intelectual
 
-Los textos, el diseño y la marca de este sitio pertenecen a Prototype S.A.S. DE C.V. Puede enlazarlo y citarlo mencionando la fuente.
+Los textos, el diseño y la marca de este sitio pertenecen a Prototype S.A.S. DE C.V. Puedes enlazarlo y citarlo mencionando la fuente.
 
 ## Responsabilidad
 

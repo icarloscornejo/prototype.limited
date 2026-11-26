@@ -9,7 +9,7 @@ description: Prototype es una boutique de ingeniería de El Salvador que constru
 
 Prototype es una boutique de ingeniería de El Salvador. Construimos IA agéntica y funciones de IA para empresas de El Salvador y del exterior.
 
-Somos pequeños a propósito. Tomamos pocos proyectos a la vez para que cada uno tenga atención senior de principio a fin, y nadie aprenda con su presupuesto.
+Somos pequeños a propósito. Tomamos pocos proyectos a la vez para que cada uno tenga atención senior de principio a fin, y nadie aprenda con tu presupuesto.
 
 Fundada por un ingeniero con más de una década construyendo apps para empresas globales.
 
@@ -18,6 +18,6 @@ Fundada por un ingeniero con más de una década construyendo apps para empresas
 - La IA vale la pena solo cuando resuelve un problema real mejor que la alternativa.
 - Un piloto debe terminar en algo funcionando, no en una presentación.
 - Lo que no se mide no se puede confiar.
-- Su equipo debe entender lo que construimos y poder mantenerlo funcionando.
+- Tu equipo debe entender lo que construimos y poder mantenerlo funcionando.
 
 [Hablemos](/es/contact)

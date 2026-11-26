@@ -7,17 +7,17 @@ description: Desarrollo agéntico para equipos de ingeniería, funciones de IA e
 
 # Servicios
 
-Todo proyecto empieza con una conversación corta sobre el problema, no sobre la tecnología. Si la IA no es la respuesta correcta, se lo diremos.
+Todo proyecto empieza con una conversación corta sobre el problema, no sobre la tecnología. Si la IA no es la respuesta correcta, te lo diremos.
 
-## Desarrollo agéntico para su equipo
+## Desarrollo agéntico para tu equipo
 
 Para equipos web y móviles de 5 a 30 ingenieros. Unas 4 semanas.
 
-- Agentes de código configurados en sus repositorios, con las reglas y el contexto que su código necesita.
-- Revisión de código y generación de pruebas automáticas en el flujo de trabajo que ya tienen.
-- Capacitación práctica para que sus ingenieros lo sigan usando cuando terminemos.
+- Agentes de código configurados en tus repositorios, con las reglas y el contexto que tu código necesita.
+- Revisión de código y generación de pruebas automáticas en el flujo de trabajo que ya tienes.
+- Capacitación práctica para que tus ingenieros lo sigan usando cuando terminemos.
 
-## Una función de IA en su app
+## Una función de IA en tu app
 
 Para empresas con un producto que quieren una función de IA en producción. Unas 4 a 6 semanas.
 
@@ -29,8 +29,8 @@ Para empresas con un producto que quieren una función de IA en producción. Una
 
 Para empresas que adoptan IA sin un equipo de IA propio. Mensual.
 
-- Un ingeniero senior que trabaja dentro de su equipo, con su gente y sus datos.
+- Un ingeniero senior que trabaja dentro de tu equipo, con tu gente y tus datos.
 - Encuentra dónde la IA rinde, la construye y la lleva a producción.
-- Deja a su equipo capaz de operar y mejorar lo que se construyó.
+- Deja a tu equipo capaz de operar y mejorar lo que se construyó.
 
 [Hablemos](/es/contact)

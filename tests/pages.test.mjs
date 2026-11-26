@@ -447,3 +447,61 @@ describe("registered legal name and address", () => {
     assert.deepEqual(paths, ["/data-deletion", "/es/data-deletion", "/es/privacy", "/es/terms", "/privacy", "/terms"]);
   });
 });
+
+// PROTO-13: the Spanish site talks to the reader as "tú". Unicode-aware boundaries because \b does not see accented letters.
+const word = (alternatives) => new RegExp(`(?<![\\p{L}\\p{N}])(?:${alternatives})(?![\\p{L}\\p{N}])`, "giu");
+const FORMAL_PRONOUN = word("usted|ustedes");
+const POSSESSIVE = word("su|sus");
+// Voseo and vosotros forms, plus the usted verbs and clitics that the pronoun checks cannot see.
+const FORBIDDEN_FORMS = word(
+  [
+    "necesitás|podés|tenés|sabés|querés|contanos|escribí|vos|vosotros|vosotras|vuestr\\w+|\\w+áis|\\w+éis",
+    "cuéntenos|quiere construir|escriba|incluya|siga los pasos|nos escribe|responderle|le decimos|le confirmaremos|le avisaremos|envió|usó|contactó|se lo diremos|ya tienen",
+  ].join("|"),
+);
+// su/sus that belong to a third party (a client, a provider, the page, the agreement), so they stay. Scoped per file
+// so a new reader-addressed "sus clientes" in another file still fails. Every phrase must still occur in its file.
+const THIRD_PARTY_POSSESSIVES = {
+  "data-deletion.md": ["según sus instrucciones"],
+  "privacy.md": ["a sus clientes", "de sus clientes", "sus instrucciones", "sus propios términos", "hacer su parte", "y su fecha"],
+  "terms.md": ["su propio acuerdo", "en su contenido"],
+};
+
+// Returns the offending matches of one Spanish text; shared by the real scan and the self-check below.
+function readerAddressProblems(text, allowedPhrases = []) {
+  const withoutThirdParty = allowedPhrases.reduce((remaining, phrase) => remaining.replaceAll(phrase, " "), text);
+  return [FORMAL_PRONOUN, POSSESSIVE, FORBIDDEN_FORMS].flatMap((pattern) => [...withoutThirdParty.matchAll(pattern)].map((match) => match[0]));
+}
+
+describe("Spanish copy addresses the reader as tú", () => {
+  const spanishFiles = readdirSync("content/es").filter((name) => name.endsWith(".md"));
+  // Whole files: the Spanish strings in src/ are the skip link label and the 404 link to the Spanish home.
+  const spanishSources = [...spanishFiles.map((name) => [name, `content/es/${name}`]), ["site.ts", "src/lib/site.ts"], ["404.astro", "src/pages/404.astro"]];
+
+  test("given content/es when listed then every page is scanned", () => {
+    assert.equal(spanishFiles.length, 7);
+  });
+
+  for (const [name, path] of spanishSources) {
+    test(`given ${path} when scanned then it has no usted, no reader-addressed su/sus and no voseo`, () => {
+      assert.ok(existsSync(path), `${path} missing`);
+      assert.deepEqual(readerAddressProblems(readFileSync(path, "utf8"), THIRD_PARTY_POSSESSIVES[name]), []);
+    });
+  }
+
+  test("given the third-party allowlist when checked then every phrase still occurs in its file", () => {
+    for (const [name, phrases] of Object.entries(THIRD_PARTY_POSSESSIVES)) {
+      const text = readText(`content/es/${name}`);
+      for (const phrase of phrases) assert.ok(text.includes(phrase), `${name} no longer contains "${phrase}"`);
+    }
+  });
+
+  test("given known bad and good sentences when scanned then the detector flags only the bad ones", () => {
+    for (const bad of ["Usted decide", "Sus derechos", "Su equipo debe", "con su presupuesto", "Ustedes pueden", "Podés escribir", "Contanos más", "Escribí a soporte", "Vosotras podéis", "Escriba a hello"]) {
+      assert.notDeepEqual(readerAddressProblems(bad), [], bad);
+    }
+    assert.deepEqual(readerAddressProblems("Tu equipo decide y tú también", []), []);
+    assert.deepEqual(readerAddressProblems("la empresa responde a sus clientes", ["a sus clientes"]), []);
+    assert.notDeepEqual(readerAddressProblems("llega a sus clientes", ["a sus clientes de ayer"]), []);
+  });
+});

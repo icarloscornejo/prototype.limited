@@ -2,18 +2,18 @@
 page: data-deletion
 path: /es/data-deletion
 title: Eliminación de datos | Prototype
-description: Cómo pedirle a Prototype que borre sus datos personales.
+description: Cómo pedirle a Prototype que borre tus datos personales.
 last_updated: 2026-11-17
 ---
 
 # Eliminación de datos
 
-Puede pedirnos que borremos los datos personales que tenemos sobre usted, incluidos los mensajes que envió a una empresa que usa un servicio construido por Prototype, como un asistente de WhatsApp.
+Puedes pedirnos que borremos los datos personales que tenemos sobre ti, incluidos los mensajes que enviaste a una empresa que usa un servicio construido por Prototype, como un asistente de WhatsApp.
 
 ## Cómo pedirlo
 
-1. Escriba a hello@prototype.limited con el asunto "Solicitud de eliminación de datos".
-2. Incluya el número de teléfono o el correo que usó, y la empresa que contactó, si aplica.
-3. Le confirmaremos que recibimos su solicitud y le avisaremos cuando los datos estén borrados.
+1. Escribe a hello@prototype.limited con el asunto "Solicitud de eliminación de datos".
+2. Incluye el número de teléfono o el correo que usaste, y la empresa que contactaste, si aplica.
+3. Te confirmaremos que recibimos tu solicitud y te avisaremos cuando los datos estén borrados.
 
-Si los datos pertenecen a uno de nuestros clientes, le pasaremos su solicitud a ese cliente y borraremos los datos según sus instrucciones, salvo que la ley nos obligue a conservarlos.
+Si los datos pertenecen a uno de nuestros clientes, le pasaremos tu solicitud a ese cliente y borraremos los datos según sus instrucciones, salvo que la ley nos obligue a conservarlos.

@@ -14,13 +14,13 @@ Esta política explica cómo Prototype S.A.S. DE C.V. ("nosotros") maneja los da
 
 ## Quiénes somos
 
-Prototype S.A.S. DE C.V. es una empresa de ingeniería con sede en El Salvador. Nuestro domicilio registrado es Condominio Paseo del Prado, Poligono D, #394, Apopa, San Salvador, 1123, El Salvador. Para cualquier pregunta o solicitud sobre privacidad, escriba a hello@prototype.limited.
+Prototype S.A.S. DE C.V. es una empresa de ingeniería con sede en El Salvador. Nuestro domicilio registrado es Condominio Paseo del Prado, Poligono D, #394, Apopa, San Salvador, 1123, El Salvador. Para cualquier pregunta o solicitud sobre privacidad, escribe a hello@prototype.limited.
 
 ## Este sitio
 
 - Este sitio no usa cookies, analítica ni scripts de rastreo.
-- Si nos escribe un correo, recibimos su nombre, su dirección de correo y lo que escriba. Lo usamos solo para responderle y para conversar sobre trabajar juntos.
-- Guardamos esos correos mientras la conversación sea útil, y los borramos cuando usted lo pida.
+- Si nos escribes un correo, recibimos tu nombre, tu dirección de correo y lo que escribas. Lo usamos solo para responderte y para conversar sobre trabajar juntos.
+- Guardamos esos correos mientras la conversación sea útil, y los borramos cuando tú lo pidas.
 
 ## Servicios que prestamos a nuestros clientes
 
@@ -32,7 +32,7 @@ Construimos y operamos software para empresas, como asistentes que responden a s
 
 ## Quién más participa
 
-Para operar estos servicios nos apoyamos en proveedores que tratan datos por nosotros bajo sus propios términos: Meta (plataforma de WhatsApp Business), proveedores de hosting en la nube y de bases de datos, y proveedores de modelos de IA. Con cada uno compartimos solo lo que necesita para hacer su parte. Si nos escribe, le decimos qué proveedores usa un servicio determinado.
+Para operar estos servicios nos apoyamos en proveedores que tratan datos por nosotros bajo sus propios términos: Meta (plataforma de WhatsApp Business), proveedores de hosting en la nube y de bases de datos, y proveedores de modelos de IA. Con cada uno compartimos solo lo que necesita para hacer su parte. Si nos escribes, te decimos qué proveedores usa un servicio determinado.
 
 ## Seguridad
 
@@ -42,9 +42,9 @@ El acceso a los datos personales está limitado a las personas que trabajan en e
 
 Guardamos los datos personales solo mientras el servicio los necesite o la ley lo exija, y después los borramos.
 
-## Sus derechos
+## Tus derechos
 
-Puede pedirnos acceder a sus datos personales, corregirlos o borrarlos. Si los datos se trataron para uno de nuestros clientes, le pasaremos su solicitud a ese cliente y actuaremos según sus instrucciones. Para borrar datos, siga los pasos de nuestra página de [Eliminación de datos](/es/data-deletion).
+Puedes pedirnos acceder a tus datos personales, corregirlos o borrarlos. Si los datos se trataron para uno de nuestros clientes, le pasaremos tu solicitud a ese cliente y actuaremos según sus instrucciones. Para borrar datos, sigue los pasos de nuestra página de [Eliminación de datos](/es/data-deletion).
 
 ## Cambios
 
