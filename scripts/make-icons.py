@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Regenerates public/favicon-32.png and public/apple-touch-icon.png from the Prototype mark.
+"""Regenerates public/favicon-32.png, public/apple-touch-icon.png and public/favicon.ico from the Prototype mark.
 
 Standard library only, so it needs no install step. It is not part of the build: run it
 by hand when the mark or the colors change, and commit the PNGs:
   python3 scripts/make-icons.py favicon > public/favicon-32.png
   python3 scripts/make-icons.py touch > public/apple-touch-icon.png
+  python3 scripts/make-icons.py ico > public/favicon.ico
 The geometry is the one in src/components/Mark.astro (viewBox 260 x 120).
 """
 import math
@@ -23,6 +24,7 @@ MARK_DARK = (0xFC, 0xF9, 0xF8)  # --mark in dark mode
 SURFACE_LIGHT = (0xF8, 0xF6, 0xF0)  # --surface in light mode
 
 SUPERSAMPLE = 4
+ICO_SIZES = (16, 32, 48)
 
 
 def distance_to_segment(point: tuple[float, float], start: tuple[float, float], end: tuple[float, float]) -> float:
@@ -97,6 +99,17 @@ def encode_png(size: int, rgba_rows: bytes) -> bytes:
     return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", header) + chunk(b"IDAT", zlib.compress(rgba_rows, 9)) + chunk(b"IEND", b"")
 
 
+def encode_ico(pngs: list[tuple[int, bytes]]) -> bytes:
+    """An ICO file whose images are the given (size, PNG bytes) pairs; PNG inside ICO is read by every current browser."""
+    directory = struct.pack("<HHH", 0, 1, len(pngs))
+    offset = 6 + 16 * len(pngs)
+    entries = b""
+    for size, png in pngs:
+        entries += struct.pack("<BBBBHHII", size, size, 0, 0, 1, 32, len(png), offset)
+        offset += len(png)
+    return directory + entries + b"".join(png for _, png in pngs)
+
+
 def main() -> None:
     # Prints one PNG to stdout: python3 scripts/make-icons.py favicon > public/favicon-32.png
     kind = sys.argv[1] if len(sys.argv) > 1 else ""
@@ -105,8 +118,11 @@ def main() -> None:
         png = encode_png(32, render(32, 0.06, MARK_LIGHT, None, 0.0, SURFACE_LIGHT))
     elif kind == "touch":
         png = encode_png(180, render(180, 0.2, MARK_LIGHT, None, 0.0, SURFACE_LIGHT))
+    elif kind == "ico":
+        # Same look as favicon.svg, whose viewBox leaves 20 of 300 units free on each side.
+        png = encode_ico([(size, encode_png(size, render(size, 20 / 300, MARK_LIGHT, None, 0.0, SURFACE_LIGHT))) for size in ICO_SIZES])
     else:
-        sys.exit("usage: make-icons.py favicon > public/favicon-32.png | make-icons.py touch > public/apple-touch-icon.png")
+        sys.exit("usage: make-icons.py favicon > public/favicon-32.png | touch > public/apple-touch-icon.png | ico > public/favicon.ico")
     sys.stdout.buffer.write(png)
 
 

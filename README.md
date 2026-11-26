@@ -28,7 +28,9 @@ pnpm test      # builds, then checks the acceptance criteria
 
 Logo review: a build made with `PROTO_GRID=1` (for example `PROTO_GRID=1 pnpm exec astro build --outDir /tmp/review`, then `astro preview --outDir /tmp/review`) adds a `?grid` overlay that draws the logo cells, center lines and baselines. A normal `pnpm build` never contains it, and a test checks that.
 
-The tab icons (`public/favicon-32.png`, `public/apple-touch-icon.png`) come from `scripts/make-icons.py`, which needs only Python 3; the usage is in its header.
+The tab icons (`public/favicon-32.png`, `public/apple-touch-icon.png`, `public/favicon.ico`) come from `scripts/make-icons.py`, which needs only Python 3; the usage is in its header.
+
+Responsive review: `scripts/sweep.mjs` loads every built page headless at 17 widths in both themes, saves screenshots and runs the layout checks (usage in its header; it needs a Playwright install pointed at by `PLAYWRIGHT_MODULE`, which the site does not depend on). It is not part of `pnpm test`.
 
 `.npmrc` pins the public registry because some machines default to a private one. Never run an install before it exists.
 

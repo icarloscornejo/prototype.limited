@@ -11,9 +11,11 @@ interface Props {
   title: string;
   description: string;
   mainClass?: string;
+  // A page that is not a version of the home (the 404) must not claim the home's URL or its hreflang pair.
+  standalone?: boolean;
 }
 
-const { language, page, title, description, mainClass } = Astro.props;
+const { language, page, title, description, mainClass, standalone = false } = Astro.props;
 const chrome = await getChrome(language, page, Astro.site!);
 const otherLocale = OG_LOCALES[chrome.switchTarget.language];
 // The ?grid review overlay is only built when PROTO_GRID=1, so a normal build (the deploy) never carries it.
@@ -31,13 +33,14 @@ const withGridOverlay = page === "home" && process.env.PROTO_GRID === "1";
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={chrome.ogUrl} />
+    {!standalone && <meta property="og:url" content={chrome.ogUrl} />}
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:locale" content={OG_LOCALES[language]} />
-    <meta property="og:locale:alternate" content={otherLocale} />
-    {chrome.alternates.map((alternate) => <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />)}
+    {!standalone && <meta property="og:locale:alternate" content={otherLocale} />}
+    {!standalone && chrome.alternates.map((alternate) => <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />)}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>

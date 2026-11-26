@@ -496,3 +496,69 @@ describe("brand details", () => {
     }
   });
 });
+
+describe("favicon.ico and the 404 page", () => {
+  const PNG_SIGNATURE = "89504e470d0a1a0a";
+
+  test("given dist when read then favicon.ico is an icon file with 16, 32 and 48 px png images inside it", () => {
+    assert.ok(existsSync("dist/favicon.ico"), "dist/favicon.ico is missing");
+    const bytes = readFileSync("dist/favicon.ico");
+    assert.equal(bytes.readUInt16LE(0), 0, "reserved field");
+    assert.equal(bytes.readUInt16LE(2), 1, "type 1 is an icon");
+    const imageCount = bytes.readUInt16LE(4);
+    assert.equal(imageCount, 3);
+    const sizes = [];
+    for (let index = 0; index < imageCount; index += 1) {
+      const entry = 6 + index * 16;
+      const size = bytes[entry] || 256;
+      const length = bytes.readUInt32LE(entry + 8);
+      const offset = bytes.readUInt32LE(entry + 12);
+      assert.ok(offset + length <= bytes.length, `image ${index} runs past the end of the file`);
+      const image = bytes.subarray(offset, offset + length);
+      assert.equal(image.subarray(0, 8).toString("hex"), PNG_SIGNATURE, `image ${index} is not a PNG`);
+      assert.equal(`${image.readUInt32BE(16)}x${image.readUInt32BE(20)}`, `${size}x${size}`, `image ${index} size differs from its directory entry`);
+      sizes.push(size);
+    }
+    assert.deepEqual(sizes.sort((a, b) => a - b), [16, 32, 48]);
+  });
+
+  for (const language of LANGUAGES) {
+    test(`given the ${language} home when built then the head also links favicon.ico, after the svg and the png`, () => {
+      const links = tagsNamed(homeHtml(language), "link");
+      const icons = links.filter((link) => link.rel === "icon").map((link) => link.href);
+      assert.deepEqual(icons, ["/favicon.svg", "/favicon-32.png", "/favicon.ico"]);
+      assert.equal(links.find((link) => link.href === "/favicon.ico")?.sizes, "16x16 32x32 48x48");
+    });
+  }
+
+  test("given dist when read then 404.html is the site's own page in English with a way back and a link to the Spanish home", () => {
+    assert.ok(existsSync("dist/404.html"), "dist/404.html is missing");
+    const html = readText("dist/404.html");
+    assert.match(html, /<html lang="en">/);
+    const main = regionOf(html, "main");
+    assert.equal((main.match(/<h1\b/g) ?? []).length, 1, "exactly one h1 inside main");
+    assert.ok(tagsNamed(main, "a").some((link) => link.href === "/"), "a link back to the home");
+    const spanishLink = tagsNamed(main, "a").find((link) => link.href === "/es/");
+    assert.equal(spanishLink?.lang, "es");
+    assert.equal(spanishLink?.hreflang, "es");
+    assert.match(main, /español/);
+    assert.ok(tagsNamed(html, "link").some((link) => link.rel === "icon" && link.href === "/favicon.svg"), "same head as the site");
+    assert.ok(html.includes('class="skip-link"') && html.includes('class="site-header"') && html.includes('class="site-footer"'), "the shared header and footer");
+    assert.doesNotMatch(html, /id="services"/, "it is not the home page");
+  });
+
+  test("given dist when read then the 404 head does not claim to be the home page", () => {
+    const html = readText("dist/404.html");
+    const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? "";
+    assert.ok(head.length > 0, "no head found");
+    assert.doesNotMatch(head, /property="og:url"/);
+    assert.doesNotMatch(head, /property="og:locale:alternate"/);
+    assert.doesNotMatch(head, /rel="alternate"/);
+  });
+
+  test("given the redirects file when read then it still holds exactly the twelve rules and nothing else", () => {
+    const rules = readText("public/_redirects").split("\n").filter((line) => line.trim() && !line.startsWith("#"));
+    assert.equal(rules.length, 12);
+    assert.ok(rules.every((rule) => rule.endsWith(" 301")));
+  });
+});

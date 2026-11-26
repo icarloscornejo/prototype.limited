@@ -234,6 +234,11 @@ h3 { font-size: clamp(29px, 3vw, 50px); font-weight: 630; }
   .work > .wrap { grid-template-columns: 1fr; gap: 36px; }
 }
 
+/* Touch screens: the short header links ("About", "ES") are 44px tall already, and get the width too. */
+@media (max-width: 768px) {
+  .site-nav a, .language-switch a { min-width: 44px; justify-content: center; }
+}
+
 @media (max-width: 680px) {
   :root { --header-height: 100px; }
   .header-inner { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 50px 44px; gap: 0; min-height: 100px; padding-block: 3px; }
